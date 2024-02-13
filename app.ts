@@ -1,9 +1,7 @@
 import * as express from 'express'
-import { Request, Response, Router } from 'express'
-import bodyParser from 'body-parser'
+import { Request, Response } from 'express'
 import mongoose from 'mongoose'
-import Book from './models/bookModels'
-import { IBook, IBookQuery } from './interfaces/interface'
+import bookRouter from './routes/bookRouter'
 
 const app = express()
 mongoose
@@ -19,40 +17,8 @@ mongoose
   })
 
 const port = process.env.PORT || 3000
-const bookRouter = Router()
 
-app.use(bodyParser.urlEncoded({ extended: true }))
-app.use(bodyParser.json())
-
-bookRouter
-  .route('/books')
-  .get(async (req: Request, res: Response) => {
-    const query: IBookQuery = {}
-    if (req.query.genre) {
-      query.genre = req.query.genre as string
-    }
-    try {
-      const books: IBook[] = await Book.find(query)
-      return res.json(books)
-    } catch (error) {
-      return res.send(error)
-    }
-  })
-  .post((req: Request, res: Response) => {
-    const book = new Book(req.body)
-
-    console.log(book)
-    res.json(book)
-  })
-
-bookRouter.route('/books/:bookId').get(async (req: Request, res: Response) => {
-  try {
-    const book: IBook | null = await Book.findById(req.params.bookId)
-    return res.json(book)
-  } catch (error) {
-    return res.send(error)
-  }
-})
+app.use(express.json())
 
 app.use('/api', bookRouter)
 
