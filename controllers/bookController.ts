@@ -52,17 +52,30 @@ export const replaceBook = async (req: Request, res: Response): Promise<void> =>
 }
 
 export const updateBook = async (req: Request, res: Response): Promise<void> => {
-  const { title, author, read, genre } = req.body
   try {
-    const book = await Book.findById(req.params.bookId)
+    const book: any = await Book.findById(req.params.bookId)
+    if (req.body._id) {
+      delete req.body._id
+    }
+
     if (book) {
-      book.title = title
-      book.genre = genre
-      book.author = author
-      book.read = read
+      Object.entries(req.body).forEach(item => {
+        const key = item[0]
+        const value = item[1]
+        book[key] = value
+      })
       book.save()
     }
     res.json(book)
+  } catch (error) {
+    res.send(error)
+  }
+}
+
+export const deleteBook = async (req: Request, res: Response): Promise<void> => {
+  try {
+    await Book.findByIdAndDelete(req.params.bookId)
+    res.send('Book Deleted Successfully.')
   } catch (error) {
     res.send(error)
   }

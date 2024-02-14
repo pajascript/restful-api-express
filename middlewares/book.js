@@ -47,7 +47,6 @@ var verifyBook = function (req, res, next) { return __awaiter(void 0, void 0, vo
                 return [4 /*yield*/, bookModels_1.default.findById(req.params.bookId)];
             case 1:
                 book = _a.sent();
-                console.log(book);
                 if (book) {
                     return [2 /*return*/, next()];
                 }
